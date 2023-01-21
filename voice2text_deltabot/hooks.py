@@ -7,7 +7,7 @@ import whisper
 from simplebot_aio import AttrDict, Bot, BotCli, EventType, const, events
 
 cli = BotCli("voice2text-bot")
-STATUS = "📸 I am a Delta Chat bot, send me any voice message to convert it to text"
+STATUS = "I am a Delta Chat bot, send me any voice message to convert it to text"
 MODEL: whisper.Whisper = None  # noqa
 
 
