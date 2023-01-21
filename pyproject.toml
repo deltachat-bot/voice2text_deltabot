@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "voice2text-deltabot"
+description = "Delta Chat bot to extract text from voice messages"
+readme = "README.md"
+requires-python = ">=3.7"
+license = {file = "LICENSE.txt"}
+keywords = ["deltachat", "bot"]
+authors = [
+  {email = "adbenitez@hispanilandia.net"},
+  {name = "adbenitez"}
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python"
+]
+dynamic = [
+    "version"
+]
+dependencies = [
+    "simplebot-aio @ git+https://github.com/simplebot-org/simplebot-aio.git",
+    "openai-whisper"
+]
+
+[project.optional-dependencies]
+dev = [
+  "black",
+  "mypy",
+  "isort",
+  "pylint",
+  "pylama",
+  "pytest",
+  "types-aiofiles",
+]
+
+[project.scripts]
+voice2text-bot = "voice2text_deltabot:main"
+
+[tool.isort]
+profile = "black"
+
+[tool.mypy]
+ignore_missing_imports = "True"
