@@ -1,6 +1,6 @@
 # Voice To Text Bot
 
-[![CI](https://github.com/simplebot-org/voice2text_deltabot/actions/workflows/python-ci.yml/badge.svg)](https://github.com/simplebot-org/voice2text_deltabot/actions/workflows/python-ci.yml)
+[![CI](https://github.com/deltachat-bot/voice2text_deltabot/actions/workflows/python-ci.yml/badge.svg)](https://github.com/deltachat-bot/voice2text_deltabot/actions/workflows/python-ci.yml)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 A voice-to-text converter bot for Delta Chat.

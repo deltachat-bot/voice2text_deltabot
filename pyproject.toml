@@ -21,7 +21,7 @@ dynamic = [
     "version"
 ]
 dependencies = [
-    "simplebot-aio @ git+https://github.com/simplebot-org/simplebot-aio.git",
+    "deltabot-cli @ git+https://github.com/deltachat-bot/deltabot-cli.git",
     "openai-whisper"
 ]
 
