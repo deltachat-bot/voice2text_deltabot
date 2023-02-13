@@ -8,7 +8,7 @@ A voice-to-text converter bot for Delta Chat.
 ## Install
 
 ```sh
-pip install voice2text-deltabot
+pip install git+https://github.com/deltachat-bot/voice2text-deltabot.git
 ```
 
 The bot uses [Whisper](https://github.com/openai/whisper) to extract the text from voice messages,
@@ -19,6 +19,12 @@ from most package managers:
 # on Ubuntu or Debian
 sudo apt update && sudo apt install ffmpeg
 ```
+
+### Installing deltachat-rpc-server
+
+This program depends on a standalone Delta Chat RPC server `deltachat-rpc-server` program that must be
+available in your `PATH`. To install it check:
+https://github.com/deltachat/deltachat-core-rust/tree/master/deltachat-rpc-server
 
 ## Usage
 
