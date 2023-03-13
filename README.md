@@ -34,7 +34,7 @@ To configure the bot:
 voice2text-bot init bot@example.org SuperHardPassword
 ```
 
-To customize the bot name, avatar and status/signature:
+**(Optional)** To customize the bot name, avatar and status/signature:
 
 ```sh
 voice2text-bot set_avatar "/path/to/avatar.png"
