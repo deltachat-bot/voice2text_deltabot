@@ -6,7 +6,11 @@ from argparse import Namespace
 import whisper
 from deltabot_cli import AttrDict, Bot, BotCli, EventType, const, events
 
+from .const import MODEL_CFG_KEY
+from .subcommands import add_subcommands
+
 cli = BotCli("voice2text-bot")
+add_subcommands(cli)
 STATUS = "I am a Delta Chat bot, send me any voice message to convert it to text"
 MODEL: whisper.Whisper = None  # noqa
 
@@ -19,9 +23,10 @@ async def on_init(bot: Bot, _args: Namespace) -> None:
 
 
 @cli.on_start
-async def on_start(_bot: Bot, _args: Namespace) -> None:
+async def on_start(bot: Bot, _args: Namespace) -> None:
     global MODEL  # pylint: disable=W0603
-    MODEL = whisper.load_model("medium")
+    model = (await bot.account.get_config(MODEL_CFG_KEY)) or "medium"
+    MODEL = whisper.load_model(model)
 
 
 @cli.on(events.RawEvent)
