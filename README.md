@@ -8,7 +8,7 @@ A voice-to-text converter bot for Delta Chat.
 ## Install
 
 ```sh
-pip install git+https://github.com/deltachat-bot/voice2text-deltabot.git
+pip install git+https://github.com/deltachat-bot/voice2text_deltabot.git
 ```
 
 The bot uses [Whisper](https://github.com/openai/whisper) to extract the text from voice messages,
