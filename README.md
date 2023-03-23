@@ -37,7 +37,7 @@ voice2text-bot init bot@example.org SuperHardPassword
 **(Optional)** To customize the bot name, avatar and status/signature:
 
 ```sh
-voice2text-bot set_avatar "/path/to/avatar.png"
+voice2text-bot config selfavatar "/path/to/avatar.png"
 voice2text-bot config displayname "Voice To Text"
 voice2text-bot config selfstatus "Hi, send me some voice message to convert it to text"
 ```
@@ -45,7 +45,7 @@ voice2text-bot config selfstatus "Hi, send me some voice message to convert it t
 Finally you can start the bot with:
 
 ```sh
-voice2text-bot
+voice2text-bot serve
 ```
 
 To see the available options, run in the command line:
