@@ -43,7 +43,7 @@ async def log_event(event: AttrDict) -> None:
 async def on_newmsg(event: AttrDict) -> None:
     msg = event.message_snapshot
     if msg.view_type in (const.ViewType.VOICE, const.ViewType.AUDIO):
-        segments, info = MODEL.transcribe(msg.file)
+        segments = MODEL.transcribe(msg.file)[0]
         result = "".join(segment.text for segment in segments)
         await msg.chat.send_message(text=result, quoted_msg=msg.id)
         return
