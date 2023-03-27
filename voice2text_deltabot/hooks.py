@@ -3,8 +3,8 @@
 import logging
 from argparse import Namespace
 
-import whisper
 from deltabot_cli import AttrDict, Bot, BotCli, EventType, const, events
+from faster_whisper import WhisperModel
 
 from .const import MODEL_CFG_KEY
 from .subcommands import add_subcommands
@@ -12,7 +12,7 @@ from .subcommands import add_subcommands
 cli = BotCli("voice2text-bot")
 add_subcommands(cli)
 STATUS = "I am a Delta Chat bot, send me any voice message to convert it to text"
-MODEL: whisper.Whisper = None  # noqa
+MODEL: WhisperModel = None  # noqa
 
 
 @cli.on_init
@@ -26,7 +26,7 @@ async def on_init(bot: Bot, _args: Namespace) -> None:
 async def on_start(bot: Bot, _args: Namespace) -> None:
     global MODEL  # pylint: disable=W0603
     model = (await bot.account.get_config(MODEL_CFG_KEY)) or "medium"
-    MODEL = whisper.load_model(model)
+    MODEL = WhisperModel(model, device="cpu", compute_type="int8")
 
 
 @cli.on(events.RawEvent)
@@ -43,8 +43,9 @@ async def log_event(event: AttrDict) -> None:
 async def on_newmsg(event: AttrDict) -> None:
     msg = event.message_snapshot
     if msg.view_type in (const.ViewType.VOICE, const.ViewType.AUDIO):
-        result = MODEL.transcribe(msg.file)
-        await msg.chat.send_message(text=result["text"], quoted_msg=msg.id)
+        segments = MODEL.transcribe(msg.file)[0]
+        result = "".join(segment.text for segment in segments)
+        await msg.chat.send_message(text=result, quoted_msg=msg.id)
         return
 
     chat = await event.message_snapshot.chat.get_basic_snapshot()

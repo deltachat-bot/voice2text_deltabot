@@ -11,7 +11,7 @@ A voice-to-text converter bot for Delta Chat.
 pip install git+https://github.com/deltachat-bot/voice2text_deltabot.git
 ```
 
-The bot uses [Whisper](https://github.com/openai/whisper) to extract the text from voice messages,
+The bot uses [Faster Whisper](https://github.com/guillaumekln/faster-whisper/) to extract the text from voice messages,
 Whisper requires the command-line tool `ffmpeg` to be installed on your system, which is available
 from most package managers:
 
