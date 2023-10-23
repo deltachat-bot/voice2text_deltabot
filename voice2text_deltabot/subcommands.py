@@ -14,7 +14,7 @@ def add_subcommands(cli: BotCli) -> None:
     )
 
 
-async def model(bot: Bot, args: Namespace) -> None:
+def model(bot: Bot, args: Namespace) -> None:
     """set the whisper model to use"""
-    await bot.account.set_config(MODEL_CFG_KEY, args.model)
+    bot.account.set_config(MODEL_CFG_KEY, args.model)
     logging.info("model=%s", args.model)
