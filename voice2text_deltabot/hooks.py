@@ -1,5 +1,6 @@
 """Event handlers and hooks."""
 
+import logging
 import time
 from argparse import Namespace
 
@@ -30,6 +31,8 @@ MODEL: WhisperModel = None  # noqa
 
 @cli.on_init
 def _on_init(bot: Bot, args: Namespace) -> None:
+    logging.basicConfig()
+    logging.getLogger("faster_whisper").setLevel(bot.logger.level)
     bot.logger.handlers = [
         RichHandler(show_path=False, omit_repeated_times=False, show_time=args.no_time)
     ]
@@ -78,8 +81,8 @@ def on_newmsg(bot: Bot, accid: int, event: AttrDict) -> None:
         took = time.time() - start
         percent = int(info.language_probability * 100)
         bot.logger.info(
-            f"[chat={msg.chat_id}, msg={msg.id}] Voice extracted: lang={info.language}"
-            f" (probability={percent}%) took {took:.1f} seconds"
+            f"[chat={msg.chat_id}, msg={msg.id}] Voice extracted: duration={info.duration:.1f}"
+            f" language={info.language} (probability={percent}%) took {took:.1f} seconds"
         )
         bot.rpc.send_msg(accid, msg.chat_id, {"text": text, "quotedMessageId": msg.id})
     elif chat.chat_type == ChatType.SINGLE:
