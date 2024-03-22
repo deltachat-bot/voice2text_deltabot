@@ -1,5 +1,6 @@
 """Event handlers and hooks."""
 
+import time
 from argparse import Namespace
 
 from deltabot_cli import AttrDict, Bot, BotCli, ChatType, EventType, ViewType, events
@@ -77,12 +78,15 @@ def on_newmsg(bot: Bot, accid: int, event: AttrDict) -> None:
             return
 
     if msg.view_type in (ViewType.VOICE, ViewType.AUDIO):
+        start = time.time()
         segments, info = MODEL.transcribe(msg.file)
-        bot.logger.info(
-            f"[chat={msg.chat_id}, msg={msg.id}] Detected language"
-            f" {info.language!r} with probability {info.language_probability}"
-        )
         text = " ".join(seg.text for seg in segments)
+        took = time.time() - start
+        percent = int(info.language_probability * 100)
+        bot.logger.info(
+            f"[chat={msg.chat_id}, msg={msg.id}] Voice extracted: lang={info.language}"
+            f" (probability={percent}%) took {took:.1f} seconds"
+        )
         bot.rpc.send_msg(accid, msg.chat_id, {"text": text, "quotedMessageId": msg.id})
     elif chat.chat_type == ChatType.SINGLE:
         bot.rpc.send_msg(accid, msg.chat_id, {"text": STATUS})
