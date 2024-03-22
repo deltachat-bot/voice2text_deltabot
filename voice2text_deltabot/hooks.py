@@ -19,12 +19,6 @@ cli.add_generic_option(
     default="large",
 )
 cli.add_generic_option(
-    "--device",
-    help="set the device type (default: %(default)s)",
-    choices=["cuda", "cpu"],
-    default="cpu",
-)
-cli.add_generic_option(
     "--compute-type",
     help="set the compute type (default: %(default)s)",
     choices=["int8", "float16", "int8_float16"],
@@ -50,7 +44,7 @@ def _on_init(bot: Bot, args: Namespace) -> None:
 @cli.on_start
 def on_start(_bot: Bot, args: Namespace) -> None:
     global MODEL  # pylint: disable=W0603
-    MODEL = WhisperModel(args.model, device=args.device, compute_type=args.compute_type)
+    MODEL = WhisperModel(args.model, device="auto", compute_type=args.compute_type)
 
 
 @cli.on(events.RawEvent)
