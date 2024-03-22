@@ -4,8 +4,14 @@ from argparse import Namespace
 
 from deltabot_cli import AttrDict, Bot, BotCli, ChatType, EventType, ViewType, events
 from faster_whisper import WhisperModel
+from rich.logging import RichHandler
 
 cli = BotCli("voice2text-bot")
+cli.add_generic_option(
+    "--no-time",
+    help="do not display date timestamp in log messages",
+    action="store_false",
+)
 cli.add_generic_option(
     "--model",
     help="set the whisper model to use, for example: small, medium, large. (default: %(default)s)",
@@ -28,7 +34,10 @@ MODEL: WhisperModel = None  # noqa
 
 
 @cli.on_init
-def _on_init(bot: Bot, _args: Namespace) -> None:
+def _on_init(bot: Bot, args: Namespace) -> None:
+    bot.logger.handlers = [
+        RichHandler(show_path=False, omit_repeated_times=False, show_time=args.no_time)
+    ]
     for accid in bot.rpc.get_all_account_ids():
         if not bot.rpc.get_config(accid, "displayname"):
             bot.rpc.set_config(accid, "displayname", "Voice To Text")
