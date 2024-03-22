@@ -79,7 +79,7 @@ def on_newmsg(bot: Bot, accid: int, event: AttrDict) -> None:
     if chat.chat_type == ChatType.SINGLE:
         bot.rpc.markseen_msgs(accid, [msg.id])
         if msg.is_bot:
-            bot.rpc.delete_messages([msg.id])
+            bot.rpc.delete_messages(accid, [msg.id])
             return
 
     if msg.view_type in (ViewType.VOICE, ViewType.AUDIO):
@@ -96,4 +96,4 @@ def on_newmsg(bot: Bot, accid: int, event: AttrDict) -> None:
     elif chat.chat_type == ChatType.SINGLE:
         bot.rpc.send_msg(accid, msg.chat_id, {"text": HELP})
 
-    bot.rpc.delete_messages([msg.id])
+    bot.rpc.delete_messages(accid, [msg.id])
