@@ -31,8 +31,8 @@ MODEL: WhisperModel = None  # noqa
 
 @cli.on_init
 def _on_init(bot: Bot, args: Namespace) -> None:
-    logging.basicConfig()
-    logging.getLogger("faster_whisper").setLevel(bot.logger.level)
+    level = logging.DEBUG if bot.logger.level == logging.DEBUG else logging.ERROR
+    logging.basicConfig(level=level)
     bot.logger.handlers = [
         RichHandler(show_path=False, omit_repeated_times=False, show_time=args.no_time)
     ]
