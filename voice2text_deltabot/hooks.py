@@ -77,7 +77,7 @@ def on_newmsg(bot: Bot, accid: int, event: AttrDict) -> None:
     if msg.view_type in (ViewType.VOICE, ViewType.AUDIO):
         start = time.time()
         segments, info = MODEL.transcribe(msg.file)
-        text = " ".join(seg.text for seg in segments)
+        text = "\n".join(seg.text.strip() for seg in segments)
         took = time.time() - start
         percent = int(info.language_probability * 100)
         bot.logger.info(
