@@ -70,6 +70,8 @@ def _log_event(bot: Bot, accid: int, event: AttrDict) -> None:
             bot.logger.debug("QR scanned by contact id=%s", event.contact_id)
             chatid = bot.rpc.create_chat_by_contact_id(accid, event.contact_id)
             bot.rpc.send_msg(accid, chatid, {"text": HELP})
+    elif event.kind == EventType.MSG_DELIVERED:
+        bot.rpc.delete_messages(accid, [event.msg_id])
 
 
 @cli.on(events.NewMessage(is_info=False, is_bot=None))
