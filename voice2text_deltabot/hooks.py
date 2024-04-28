@@ -106,11 +106,7 @@ def on_newmsg(bot: Bot, accid: int, event: NewMsgEvent) -> None:
         segments, info = MODEL.transcribe(msg.file)
         lines = []
         for seg in segments:
-            if (
-                seg.avg_logprob < -0.7
-                or seg.no_speech_prob > 0.5
-                or seg.compression_ratio < 0.9
-            ):
+            if seg.avg_logprob < -0.7 or seg.no_speech_prob > 0.5:
                 continue
             text = seg.text.strip()
             if text.strip("."):
