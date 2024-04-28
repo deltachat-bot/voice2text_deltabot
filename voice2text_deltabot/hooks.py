@@ -102,6 +102,7 @@ def on_newmsg(bot: Bot, accid: int, event: NewMsgEvent) -> None:
             return
 
     if msg.view_type in (MessageViewtype.VOICE, MessageViewtype.AUDIO):
+        bot.rpc.send_reaction(accid, msg.id, ["⏳"])
         start = time.time()
         segments, info = MODEL.transcribe(msg.file)
         lines = []
@@ -118,10 +119,11 @@ def on_newmsg(bot: Bot, accid: int, event: NewMsgEvent) -> None:
             f" language={info.language} (probability={percent}%) took {took:.1f} seconds"
         )
         if lines:
+            bot.rpc.send_reaction(accid, msg.id, [])
             reply = MsgData(text="\n".join(lines), quoted_message_id=msg.id)
             bot.rpc.send_msg(accid, msg.chat_id, reply)
         else:
-            bot.rpc.send_reaction(accid, msg.id, ["😶"])
+            bot.rpc.send_reaction(accid, msg.id, ["🎶"])
     elif chat.chat_type == ChatType.SINGLE:
         reply = MsgData(text=HELP)
         bot.rpc.send_msg(accid, msg.chat_id, reply)
