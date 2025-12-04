@@ -13,6 +13,7 @@ from deltachat2 import (
     MessageViewtype,
     MsgData,
     NewMsgEvent,
+    Message,
     events,
 )
 from faster_whisper import WhisperModel
@@ -111,35 +112,39 @@ def on_newmsg(bot: Bot, accid: int, event: NewMsgEvent) -> None:
             return
 
     if msg.view_type in (MessageViewtype.VOICE, MessageViewtype.AUDIO):
-        reply = MsgData(text="⏳", quoted_message_id=msg.id)
-        msgid = bot.rpc.send_msg(accid, msg.chat_id, reply)
-        start = time.time()
-        segments, info = MODEL.transcribe(msg.file)
-        lines = []
-        last_time = 0
-        for seg in segments:
-            if seg.end > ARGS.max_duration:
-                lines.append("[...]")
-                break
-            if seg.avg_logprob < -0.7 or seg.no_speech_prob > 0.5:
-                continue
-            text = seg.text.strip()
-            if text.strip("."):
-                lines.append(text)
-            if seg.end - last_time > 10 and info.duration - seg.end > 10:
-                last_time = seg.end
-                bot.rpc.send_edit_request(accid, msgid, "\n".join(lines) + "\n\n⏳")
-        took = time.time() - start
-        percent = int(info.language_probability * 100)
-        bot.logger.info(
-            f"[chat={msg.chat_id}, msg={msg.id}] Voice extracted: duration={info.duration:.1f}"
-            f" language={info.language} (probability={percent}%) took {took:.1f} seconds"
-        )
-        if lines:
-            bot.rpc.send_edit_request(accid, msgid, "\n".join(lines))
-        else:
-            bot.rpc.delete_messages_for_all(accid, msgid)
-            bot.rpc.send_reaction(accid, msg.id, ["🎶"])
+        _process_audio(bot, accid, msg)
     elif chat.chat_type == ChatType.SINGLE:
         reply = MsgData(text=HELP)
         bot.rpc.send_msg(accid, msg.chat_id, reply)
+
+
+def _process_audio(bot: Bot, accid: int, msg: Message) -> None:
+    reply = MsgData(text="⏳", quoted_message_id=msg.id)
+    msgid = bot.rpc.send_msg(accid, msg.chat_id, reply)
+    start = time.time()
+    segments, info = MODEL.transcribe(msg.file)
+    lines = []
+    last_time = 0
+    for seg in segments:
+        if seg.end > ARGS.max_duration:
+            lines.append("[...]")
+            break
+        if seg.avg_logprob < -0.7 or seg.no_speech_prob > 0.5:
+            continue
+        text = seg.text.strip()
+        if text.strip("."):
+            lines.append(text)
+        if seg.end - last_time > 10 and info.duration - seg.end > 10:
+            last_time = seg.end
+            bot.rpc.send_edit_request(accid, msgid, "\n".join(lines) + "\n\n⏳")
+    took = time.time() - start
+    percent = int(info.language_probability * 100)
+    bot.logger.info(
+        f"[chat={msg.chat_id}, msg={msg.id}] Voice extracted: duration={info.duration:.1f}"
+        f" language={info.language} (probability={percent}%) took {took:.1f} seconds"
+    )
+    if lines:
+        bot.rpc.send_edit_request(accid, msgid, "\n".join(lines))
+    else:
+        bot.rpc.delete_messages_for_all(accid, msgid)
+        bot.rpc.send_reaction(accid, msg.id, ["🎶"])
