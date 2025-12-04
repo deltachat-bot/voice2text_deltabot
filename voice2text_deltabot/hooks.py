@@ -111,10 +111,12 @@ def on_newmsg(bot: Bot, accid: int, event: NewMsgEvent) -> None:
             return
 
     if msg.view_type in (MessageViewtype.VOICE, MessageViewtype.AUDIO):
-        bot.rpc.send_reaction(accid, msg.id, ["⏳"])
+        reply = MsgData(text="⏳", quoted_message_id=msg.id)
+        msgid = bot.rpc.send_msg(accid, msg.chat_id, reply)
         start = time.time()
         segments, info = MODEL.transcribe(msg.file)
         lines = []
+        last_time = 0
         for seg in segments:
             if seg.end > ARGS.max_duration:
                 lines.append("[...]")
@@ -124,6 +126,9 @@ def on_newmsg(bot: Bot, accid: int, event: NewMsgEvent) -> None:
             text = seg.text.strip()
             if text.strip("."):
                 lines.append(text)
+            if seg.end - last_time > 10 and info.duration - seg.end > 10:
+                last_time = seg.end
+                bot.rpc.send_edit_request(accid, msgid, "\n".join(lines) + "\n\n⏳")
         took = time.time() - start
         percent = int(info.language_probability * 100)
         bot.logger.info(
@@ -131,10 +136,9 @@ def on_newmsg(bot: Bot, accid: int, event: NewMsgEvent) -> None:
             f" language={info.language} (probability={percent}%) took {took:.1f} seconds"
         )
         if lines:
-            bot.rpc.send_reaction(accid, msg.id, [])
-            reply = MsgData(text="\n".join(lines), quoted_message_id=msg.id)
-            bot.rpc.send_msg(accid, msg.chat_id, reply)
+            bot.rpc.send_edit_request(accid, msgid, "\n".join(lines))
         else:
+            bot.rpc.delete_messages_for_all(accid, msgid)
             bot.rpc.send_reaction(accid, msg.id, ["🎶"])
     elif chat.chat_type == ChatType.SINGLE:
         reply = MsgData(text=HELP)
