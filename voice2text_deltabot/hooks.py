@@ -87,8 +87,6 @@ def _log_event(bot: Bot, accid: int, event: CoreEvent) -> None:
         bot.logger.warning(event.msg)
     elif event.kind == EventType.ERROR:
         bot.logger.error(event.msg)
-    elif event.kind == EventType.MSG_DELIVERED:
-        bot.rpc.delete_messages(accid, [event.msg_id])
     elif event.kind == EventType.SECUREJOIN_INVITER_PROGRESS:
         if event.progress == 1000:
             if not bot.rpc.get_contact(accid, event.contact_id).is_bot:
