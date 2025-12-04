@@ -28,6 +28,12 @@ cli.add_generic_option(
     action="store_false",
 )
 cli.add_generic_option(
+    "--max-duration",
+    type=int,
+    default=600,
+    help="maximum amount of seconds to transcribe (default: %(default)s)",
+)
+cli.add_generic_option(
     "--model",
     help="set the whisper model to use, for example: small, medium, large. (default: %(default)s)",
     default="large",
@@ -44,10 +50,13 @@ HELP = (
     " only I will have access for a short period of time to the voice messages you send to me."
 )
 MODEL: WhisperModel = None  # noqa
+ARGS = Namespace()
 
 
 @cli.on_init
 def _on_init(bot: Bot, args: Namespace) -> None:
+    global ARGS
+    ARGS = args
     level = logging.DEBUG if bot.logger.level == logging.DEBUG else logging.ERROR
     logging.basicConfig(level=level)
     bot.logger.handlers = [
@@ -107,6 +116,9 @@ def on_newmsg(bot: Bot, accid: int, event: NewMsgEvent) -> None:
         segments, info = MODEL.transcribe(msg.file)
         lines = []
         for seg in segments:
+            if seg.end > ARGS.max_duration:
+                lines.append("[...]")
+                break
             if seg.avg_logprob < -0.7 or seg.no_speech_prob > 0.5:
                 continue
             text = seg.text.strip()
