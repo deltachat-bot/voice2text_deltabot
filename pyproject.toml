@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 keywords = ["deltachat", "bot"]
 authors = [
-  {name = "adbenitez", email = "adb@merlinux.eu"},
+  {name = "adbenitez", email = "adb@arcanechat.me"},
 ]
 classifiers = [
   "Development Status :: 4 - Beta",
