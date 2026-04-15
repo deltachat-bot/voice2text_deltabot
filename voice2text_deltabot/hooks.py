@@ -10,10 +10,10 @@ from deltachat2 import (
     ChatType,
     CoreEvent,
     EventType,
+    Message,
     MessageViewtype,
     MsgData,
     NewMsgEvent,
-    Message,
     events,
 )
 from faster_whisper import WhisperModel
@@ -144,5 +144,5 @@ def _process_audio(bot: Bot, accid: int, msg: Message) -> None:
     if lines:
         bot.rpc.send_edit_request(accid, msgid, "\n".join(lines))
     else:
-        bot.rpc.delete_messages_for_all(accid, msgid)
+        bot.rpc.delete_messages_for_all(accid, [msgid])
         bot.rpc.send_reaction(accid, msg.id, ["🎶"])
